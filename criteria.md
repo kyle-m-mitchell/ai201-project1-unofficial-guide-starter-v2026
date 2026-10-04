@@ -23,6 +23,10 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
+These are informal posts, not standardized reference entries. A question may
+phrase a fact differently from its post, or a similar campus post may rank
+above the right one. Four of five still requires dependable retrieval while
+allowing one plausible miss.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
@@ -33,6 +37,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
+Each chunk keeps its source filename, and the answer prompt can use that
+metadata. Because a citation is necessary for a reader to check a campus
+claim, I expect all five produced answers to name a source.
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
 
@@ -50,12 +57,16 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
+The five out-of-scope questions concern topics absent from these campus
+posts, so the gate should refuse nearly all of them. I allow one accidental
+close match because semantic retrieval can rank a vaguely related post even
+when the requested fact is missing.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
 ---
 
-## 4. Something about your chunks
+## 4. Sampled chunks stand on their own
 
 <!-- YOU WRITE THIS ONE.
 
@@ -69,15 +80,18 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
+For at least 4 of 5 sampled chunks, I can write and answer a single-fact
+question using that chunk alone, without reading another chunk.
 
-
-**Why this target:**
-
+**Why this target:** The `campus_life` posts are short and usually keep a
+specific topic in one post. Requiring four of five checks that the chunks
+preserve enough context to be useful, while allowing one post whose wording
+depends on context outside the sampled chunk.
 
 
 ---
 
-## 5. Your choice
+## 5. Answers give the expected fact with the correct source
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -87,10 +101,14 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
+For at least 4 of my 5 test questions, the answer states the expected fact
+and cites a source document that actually contains that fact.
 
-
-**Why this target:**
-
+**Why this target:** A source name alone would not show that the answer is
+grounded. These posts contain specific prices, deadlines, and time windows,
+so the answer should match the documented fact and point to the post that
+supports it. One miss remains possible if retrieval chooses a similar but
+irrelevant campus post.
 
 
 ---
