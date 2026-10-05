@@ -244,23 +244,25 @@ Source: dining_north_kitchen.txt
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+None of the five original criteria were missed in the before runs. The three
+generated runs all cleared the targets, so there is no original-question
+failure to attribute to a pipeline stage. The `4 of 5` targets were fairly
+safe for five short posts with explicit facts. In a future test I would
+tighten criterion 5 from `4 of 5` to `5 of 5` and include new phrasings,
+since a correct cited answer matters for every user question. I have not
+changed the original target or the before verdict.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
-
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
+I also tested a new, unscored housing paraphrase: “What month does the student
+housing selection order become available?” Retrieval returned
+`advising_registration.txt` first at `0.492` and the relevant
+`admin_housing_lottery.txt` second at `0.515`. The `0.40` relevance gate
+refused before generation, even though the correct post was in the top five.
+This is a **relevance-gate** failure: the threshold was calibrated to the
+five original phrasings and is too strict for this valid paraphrase. It is
+not a miss against the five precommitted criteria, but it exposes a limitation
+those criteria did not test. A temporary `--threshold 0.6` run answered
+“the second week of March” and cited `admin_housing_lottery.txt`; that
+observation motivates one measured gate change.
 
 ## The Improvement
 
