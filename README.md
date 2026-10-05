@@ -266,48 +266,69 @@ observation motivates one measured gate change.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I raised the relevance cutoff in `config.py` from `0.40`
+to `0.60`. I kept the corpus, full-post chunks, model, top-k, five questions,
+and original criteria the same. This was the only system change between the
+before and after runs.
 
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+**Why I picked it:** The new housing paraphrase retrieved the right post in
+the top five, but the best distance was `0.492`, so the `0.40` gate stopped it
+before generation. The five unrelated controls had distances `0.825`–`0.934`,
+leaving room to test a `0.60` gate. This is a measured choice on a small test
+set, not a guarantee that every unrelated question will be rejected.
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 4. Sampled chunks stand on their own | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 5. Expected fact with correct source | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
-**Did it help?**
+The raw answers and distances are in `results/run_2026-10-05_0238_after.md`,
+produced by `run_eval.py::main` with caching off. I read all 15 answers and
+their cited source posts to score criteria 2 and 5; the optional `scorer.py`
+was not used. Retrieval and the sampled chunks are unchanged by this cutoff,
+so criteria 1 and 4 have the same result. The out-of-scope gate is
+deterministic, so criterion 3 was measured once and repeated in the columns.
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+The new housing paraphrase is **outside** the five precommitted questions.
+Before: refused at best distance `0.492` with cutoff `0.40`, before any model
+call. After: passed at cutoff `0.60` and answered “the second week of March”
+with `admin_housing_lottery.txt`. The final default-cutoff check reused the
+earlier live model response from cache; the earlier temporary `0.60` probe
+made a real model call.
 
-     Milestone 4. -->
+**Did it help?** Yes on the one failure that motivated the change: the
+housing paraphrase went from refusal to a correct sourced answer. The five
+original questions stayed at 5 of 5 on every criterion in all three runs,
+and the five unrelated controls were still refused. Thus the original table
+shows **no numerical gain**; the gain is limited to the extra paraphrase
+probe. I cannot infer a general improvement rate from one probe.
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
-
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+No original criterion was missed after the change. The evidence is still
+narrow: five fact questions, five unrelated controls, and one additional
+housing paraphrase. A cutoff of `0.60` may accept a different unrelated
+question whose distance falls below it, and a valid paraphrase whose best
+distance is above it may still be refused. I would test more paraphrases and
+near-boundary unrelated questions before treating this gate as reliable.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+I would tighten criterion 5 from at least 4 of 5 to 5 of 5 and test new
+phrasings, not only direct fact questions. The original questions were all
+answered correctly, so they did not expose the gate's false refusal. I would
+also report answer correctness and refusal behavior separately: a gate can
+protect against unrelated questions while rejecting valid ones.
 
-     Milestone 5. -->
+### Unit 2: How I Used AI
+
+I chose to test the `0.60` cutoff after seeing the before-run distances and
+the housing paraphrase failure. AI helped run the probes, compare the raw
+answers against my original criteria, and draft this evidence and diagnosis.
+I reviewed the real outputs and kept the original targets and before verdicts
+visible. The reported improvement is restricted to what the runs measured.
