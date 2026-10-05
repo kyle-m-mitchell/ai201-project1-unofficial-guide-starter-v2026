@@ -294,6 +294,40 @@ was not used. Retrieval and the sampled chunks are unchanged by this cutoff,
 so criteria 1 and 4 have the same result. The out-of-scope gate is
 deterministic, so criterion 3 was measured once and repeated in the columns.
 
+### Representative after-run output
+
+**1. Retrieved evidence.** `store.py::search` included
+`admin_housing_lottery.txt#0`; its unchanged `chunker.py::split_documents`
+chunk says, “Numbers come out the second week of March and selection runs over
+four evenings.”
+
+**2. Source named.** `run_eval.py::run_once`, housing question, run 1:
+
+```text
+Student housing lottery numbers come out the second week of March (admin_housing_lottery.txt).
+```
+
+**3. Gate refusal.** `run_eval.py::check_out_of_scope` using
+`gate.py::check`:
+
+```text
+refused  (best distance 0.825)  What is the capital of Mongolia?
+```
+
+**4. Standalone chunk.** The unchanged `chunker.py::split_documents`
+add/drop sample says:
+
+```text
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript.
+```
+
+**5. Correct fact and source.** `run_eval.py::run_once`, North Kitchen
+question, run 2:
+
+```text
+A meal at North Kitchen costs $13.00 cash (dining_north_kitchen.txt).
+```
+
 The new housing paraphrase is **outside** the five precommitted questions.
 Before: refused at best distance `0.492` with cutoff `0.40`, before any model
 call. After: passed at cutoff `0.60` and answered “the second week of March”
